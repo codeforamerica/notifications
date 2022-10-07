@@ -81,6 +81,4 @@ test:
 #
 production:
   <<: *default
-  database: notifications_production
-  username: notifications
-  password: <%= ENV["NOTIFICATIONS_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>
