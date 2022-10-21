@@ -30,6 +30,8 @@ gem "jbuilder"
 # Use Twilio for SMS messaging
 gem "twilio-ruby"
 
+gem "mobility"
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 
