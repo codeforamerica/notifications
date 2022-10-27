@@ -256,6 +256,7 @@ DEPENDENCIES
   selenium-webdriver
   sprockets-rails
   stimulus-rails
+  thor
   turbo-rails
   twilio-ruby
   tzinfo-data
