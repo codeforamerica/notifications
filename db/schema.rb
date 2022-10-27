@@ -10,9 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_19_224550) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_27_020540) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "sms_message_direction", ["inbound", "outbound-api", "outbound-call", "outbound-reply"]
+  create_enum "sms_message_status", ["accepted", "scheduled", "canceled", "queued", "sending", "sent", "failed", "delivered", "undelivered", "receiving", "received", "read"]
 
   create_table "message_templates", force: :cascade do |t|
     t.string "name", null: false
@@ -20,6 +25,22 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_224550) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_message_templates_on_name", unique: true
+  end
+
+  create_table "sms_messages", force: :cascade do |t|
+    t.string "message_sid"
+    t.string "from"
+    t.string "to"
+    t.text "body"
+    t.datetime "date_created"
+    t.datetime "date_updated"
+    t.datetime "date_sent"
+    t.string "error_code"
+    t.string "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.enum "direction", null: false, enum_type: "sms_message_direction"
+    t.enum "status", null: false, enum_type: "sms_message_status"
   end
 
 end
