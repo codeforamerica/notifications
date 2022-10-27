@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_27_203306) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_27_204812) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -58,8 +58,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_203306) do
     t.datetime "updated_at", null: false
     t.enum "direction", null: false, enum_type: "sms_message_direction"
     t.enum "status", null: false, enum_type: "sms_message_status"
+    t.bigint "recipients_id"
+    t.index ["recipients_id"], name: "index_sms_messages_on_recipients_id"
   end
 
   add_foreign_key "message_batches", "message_templates"
   add_foreign_key "recipients", "message_batches", column: "message_batches_id"
+  add_foreign_key "sms_messages", "recipients", column: "recipients_id"
 end

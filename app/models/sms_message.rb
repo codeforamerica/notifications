@@ -16,6 +16,15 @@
 #  to            :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  recipients_id :bigint
+#
+# Indexes
+#
+#  index_sms_messages_on_recipients_id  (recipients_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (recipients_id => recipients.id)
 #
 class SmsMessage < ApplicationRecord
   enum :direction, { inbound: "inbound",
