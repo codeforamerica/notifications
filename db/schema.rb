@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_27_020540) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_27_203306) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,12 +19,29 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_020540) do
   create_enum "sms_message_direction", ["inbound", "outbound-api", "outbound-call", "outbound-reply"]
   create_enum "sms_message_status", ["accepted", "scheduled", "canceled", "queued", "sending", "sent", "failed", "delivered", "undelivered", "receiving", "received", "read"]
 
+  create_table "message_batches", force: :cascade do |t|
+    t.bigint "message_template_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_template_id"], name: "index_message_batches_on_message_template_id"
+  end
+
   create_table "message_templates", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "body", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_message_templates_on_name", unique: true
+  end
+
+  create_table "recipients", force: :cascade do |t|
+    t.string "program"
+    t.string "program_case_id"
+    t.string "phone_number"
+    t.bigint "message_batches_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_batches_id"], name: "index_recipients_on_message_batches_id"
   end
 
   create_table "sms_messages", force: :cascade do |t|
@@ -43,4 +60,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_020540) do
     t.enum "status", null: false, enum_type: "sms_message_status"
   end
 
+  add_foreign_key "message_batches", "message_templates"
+  add_foreign_key "recipients", "message_batches", column: "message_batches_id"
 end
