@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_27_204812) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_27_212701) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,10 +38,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_204812) do
     t.string "program"
     t.string "program_case_id"
     t.string "phone_number"
-    t.bigint "message_batches_id", null: false
+    t.bigint "message_batch_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["message_batches_id"], name: "index_recipients_on_message_batches_id"
+    t.index ["message_batch_id"], name: "index_recipients_on_message_batch_id"
   end
 
   create_table "sms_messages", force: :cascade do |t|
@@ -63,6 +63,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_204812) do
   end
 
   add_foreign_key "message_batches", "message_templates"
-  add_foreign_key "recipients", "message_batches", column: "message_batches_id"
+  add_foreign_key "recipients", "message_batches"
   add_foreign_key "sms_messages", "recipients", column: "recipients_id"
 end
