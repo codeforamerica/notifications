@@ -3,12 +3,27 @@ class SmsController < ApiController
   before_action :ensure_twilio_request
 
   def status_callback
-    head :accepted
+    sms_message = SmsMessage.find_by(message_sid: params["MessageSid"])
+    if sms_message
+      sms_message.update(
+        status: params["MessageStatus"],
+        error_code: params["ErrorCode"]
+      )
+      head :ok
+    else
+      head :not_found
+    end
   end
 
   def incoming_message
-    sender_number = params["From"]
-    MessageService.new.send_message(sender_number, "Got your message")
+    SmsMessage.create(
+      message_sid: params["MessageSid"],
+      from: params["From"],
+      to: params["To"],
+      body: params["Body"],
+      direction: :inbound,
+      status: params["SmsStatus"].downcase
+    )
     head :created
   end
 
