@@ -33,3 +33,5 @@
 
 # Ignore RubyMine files
 .idea
+
+/config/local_env.yml
