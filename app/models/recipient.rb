@@ -20,4 +20,5 @@
 #
 class Recipient < ApplicationRecord
   belongs_to :message_batch
+  validates :phone_number, format: { with: /\A\+1\d{10}\z/, message: "%{value} is not a valid phone number"}
 end
