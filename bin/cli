@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require "thor"
+require File.expand_path('../cli/notifications_cli', File.dirname(__FILE__))
+
+NotificationsCli.start(ARGV)
+
