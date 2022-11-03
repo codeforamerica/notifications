@@ -1,7 +1,7 @@
 require File.expand_path('../config/environment', __dir__)
 
 class NotificationsCli < Thor
-  desc "import_message_batch message_template_name recipients_csv", "import a new message batch"
+  desc "import_message_batch message_template_name recipients_csv", "Import a new message batch to send message named message_template_name to recipients_csv "
   def import_message_batch(message_template_name, recipients_csv)
     MessageBatchImportService.new.import_message_batch(message_template_name, recipients_csv)
   rescue MessageBatchImportService::MessageTemplateNotFound
@@ -12,7 +12,7 @@ class NotificationsCli < Thor
     puts e.message
   end
 
-  desc "send_test_message to_number message_body", "Sends a single SMS containing message_body to to_number. e.g. thor message:send_test_message +15555555555 'Hello, this is phone'"
+  desc "send_test_message to_number message_body", "Sends a single SMS containing message_body to to_number. e.g. bin/cli send_test_message +15555555555 'Hello, this is phone'"
   def send_test_message(to_number, message_body)
     MessageService.new.send_message(to_number, message_body)
   end
