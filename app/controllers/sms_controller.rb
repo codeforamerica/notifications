@@ -5,10 +5,19 @@ class SmsController < ApiController
   def status_callback
     sms_message = SmsMessage.find_by(message_sid: params["MessageSid"])
     if sms_message
+      status = params["MessageStatus"]
       sms_message.update(
-        status: params["MessageStatus"],
+        status: status,
         error_code: params["ErrorCode"]
       )
+      recipient = sms_message.recipient
+      if recipient
+        if %w(sent delivered).contains? status
+          recipient.update(status: :delivery_success)
+        elsif %w(delivery_unknown undelivered failed).contains? status
+          recipient.update(status: :delivery_error)
+        end
+      end
       head :ok
     else
       head :not_found

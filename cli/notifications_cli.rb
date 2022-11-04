@@ -14,6 +14,21 @@ class NotificationsCli < Thor
 
   desc "send_test_message to_number message_body", "Sends a single SMS containing message_body to to_number. e.g. bin/cli send_test_message +15555555555 'Hello, this is phone'"
   def send_test_message(to_number, message_body)
-    MessageService.new.send_message(to_number, message_body)
+    message_template = MessageTemplate.create!(
+      name: "Test Message (#{DateTime.now})",
+      body: message_body
+    )
+    message_batch = MessageBatch.create!(
+      message_template: message_template
+    )
+    recipient = Recipient.create!(
+      program: "SNAP",
+      program_case_id: "0",
+      message_batch: message_batch,
+      phone_number: to_number
+    )
+
+    MessageService.new.send_message(recipient, message_template.body)
+
   end
 end
