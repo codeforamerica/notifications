@@ -16,7 +16,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_044422) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "recipient_status", ["imported", "consent_error", "api_error", "api_success", "delivery_error", "delivery_success"]
+  create_enum "recipient_status", ["imported", "api_error", "api_success", "delivery_error", "delivery_success"]
   create_enum "sms_message_direction", ["inbound", "outbound-api", "outbound-call", "outbound-reply"]
   create_enum "sms_message_status", ["accepted", "scheduled", "canceled", "queued", "sending", "sent", "failed", "delivered", "undelivered", "receiving", "received", "read"]
 

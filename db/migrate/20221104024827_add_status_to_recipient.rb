@@ -1,7 +1,7 @@
 class AddStatusToRecipient < ActiveRecord::Migration[7.0]
 
   def up
-    create_enum :recipient_status, %w(imported consent_error api_error api_success delivery_error delivery_success)
+    create_enum :recipient_status, %w(imported api_error api_success delivery_error delivery_success)
 
     change_table :recipients do |t|
       t.enum :sms_status, enum_type: :recipient_status, default: "imported", null: false
@@ -12,7 +12,8 @@ class AddStatusToRecipient < ActiveRecord::Migration[7.0]
 
   def down
     remove_column :recipients, :sms_status
-    remove_column :sms_messages, :status
+    remove_column :recipients, :sms_api_error_code
+    remove_column :recipients, :sms_api_error_message
 
     execute <<-SQL
     DROP TYPE recipient_status;
