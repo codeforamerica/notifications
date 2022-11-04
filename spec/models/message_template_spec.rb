@@ -15,17 +15,16 @@
 require 'rails_helper'
 
 RSpec.describe MessageTemplate, type: :model do
-  it "stores a body in different locales" do
-    message_template = MessageTemplate.new(name: 'Message1', body: 'Message body in English')
-    Mobility.with_locale(:es) { message_template.body = 'Cuerpo del mensaje en español' }
-    expect(message_template.body).to eq('Message body in English')
-    Mobility.with_locale(:es) { expect(message_template.body).to eq('Cuerpo del mensaje en español') }
+  subject(:message_template) { build(:message_template, body: 'Message body in English') }
+  it "stores a message body in different locales" do
+    subject.body_backend.write(:es, 'Cuerpo del mensaje en español')
+    expect(subject.body).to eq('Message body in English')
+    Mobility.with_locale(:es) { expect(subject.body).to eq('Cuerpo del mensaje en español') }
   end
 
   context "when no translation is available for a supported locale" do
     it "defaults to the default locale" do
-      message_template = MessageTemplate.new(name: 'Message1', body: 'Message body')
-      Mobility.with_locale(:es) { expect(message_template.body).to eq('Message body') }
+      Mobility.with_locale(:es) { expect(subject.body).to eq('Message body in English') }
     end
   end
 end
