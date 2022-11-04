@@ -16,15 +16,15 @@
 #  to            :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  recipients_id :bigint
+#  recipient_id  :bigint
 #
 # Indexes
 #
-#  index_sms_messages_on_recipients_id  (recipients_id)
+#  index_sms_messages_on_recipient_id  (recipient_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (recipients_id => recipients.id)
+#  fk_rails_...  (recipient_id => recipients.id)
 #
 require 'rails_helper'
 

@@ -1,24 +1,22 @@
 class MessageService
   include TwilioHelper
 
-  def send_message(to, body)
+  def send_message(recipient, body)
     begin
       message = twilio_client.messages.create(
         from: twilio_number,
         status_callback: "#{ENV['NGROK_URL']}/sms/status_callback",
-        to: to,
+        to: recipient.phone_number,
         body: body
       )
     rescue Twilio::REST::RestError => error
-      SmsMessage.create(
-        to: to,
-        body: body,
-        error_code: error.code,
-        error_message: error.error_message,
-        direction: :outbound_api,
-        status: :failed
+      recipient.update(
+        sms_status: :api_error,
+        sms_api_error_code: error.code,
+        sms_api_error_message: error.error_message
       )
     else
+      recipient.update(sms_status: :api_success)
       SmsMessage.create(
         message_sid: message.sid,
         from: message.from,
@@ -30,7 +28,8 @@ class MessageService
         error_code: message.error_code,
         error_message: message.error_message,
         direction: message.direction,
-        status: message.status
+        status: message.status,
+        recipient: recipient
       )
     end
   end

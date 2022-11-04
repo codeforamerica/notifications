@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_27_215033) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_04_044422) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "recipient_status", ["imported", "api_error", "api_success", "delivery_error", "delivery_success"]
   create_enum "sms_message_direction", ["inbound", "outbound-api", "outbound-call", "outbound-reply"]
   create_enum "sms_message_status", ["accepted", "scheduled", "canceled", "queued", "sending", "sent", "failed", "delivered", "undelivered", "receiving", "received", "read"]
 
@@ -41,6 +42,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_215033) do
     t.bigint "message_batch_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "sms_status", default: "imported", null: false, enum_type: "recipient_status"
+    t.string "sms_api_error_code"
+    t.string "sms_api_error_message"
     t.index ["message_batch_id"], name: "index_recipients_on_message_batch_id"
   end
 
@@ -58,11 +62,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_215033) do
     t.datetime "updated_at", null: false
     t.enum "direction", null: false, enum_type: "sms_message_direction"
     t.enum "status", null: false, enum_type: "sms_message_status"
-    t.bigint "recipients_id"
-    t.index ["recipients_id"], name: "index_sms_messages_on_recipients_id"
+    t.bigint "recipient_id"
+    t.index ["recipient_id"], name: "index_sms_messages_on_recipient_id"
   end
 
   add_foreign_key "message_batches", "message_templates"
   add_foreign_key "recipients", "message_batches"
-  add_foreign_key "sms_messages", "recipients", column: "recipients_id"
+  add_foreign_key "sms_messages", "recipients"
 end
