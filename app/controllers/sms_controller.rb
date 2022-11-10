@@ -46,5 +46,4 @@ class SmsController < ApiController
     twilio_request = validator.validate(request.url, request.POST, twilio_signature)
     head :forbidden unless twilio_request
   end
-
 end
