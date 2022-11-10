@@ -27,7 +27,7 @@
 #  fk_rails_...  (recipient_id => recipients.id)
 #
 class SmsMessage < ApplicationRecord
-  belongs_to :recipient
+  belongs_to :recipient, optional: true
 
   enum :direction, { inbound: "inbound",
                      outbound_api: "outbound-api",

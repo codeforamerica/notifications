@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_04_044422) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_10_020049) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,11 +20,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_044422) do
   create_enum "sms_message_direction", ["inbound", "outbound-api", "outbound-call", "outbound-reply"]
   create_enum "sms_message_status", ["accepted", "scheduled", "canceled", "queued", "sending", "sent", "failed", "delivered", "undelivered", "receiving", "received", "read"]
 
+  create_table "consent_changes", force: :cascade do |t|
+    t.boolean "new_consent"
+    t.string "change_source", null: false
+    t.bigint "sms_message_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "program_id"
+    t.index ["program_id"], name: "index_consent_changes_on_program_id"
+    t.index ["sms_message_id"], name: "index_consent_changes_on_sms_message_id"
+  end
+
   create_table "message_batches", force: :cascade do |t|
     t.bigint "message_template_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "program_id"
     t.index ["message_template_id"], name: "index_message_batches_on_message_template_id"
+    t.index ["program_id"], name: "index_message_batches_on_program_id"
   end
 
   create_table "message_templates", force: :cascade do |t|
@@ -35,11 +48,20 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_044422) do
     t.index ["name"], name: "index_message_templates_on_name", unique: true
   end
 
+  create_table "programs", force: :cascade do |t|
+    t.string "name", null: false
+    t.jsonb "opt_in_keywords", null: false
+    t.jsonb "opt_out_keywords", null: false
+    t.jsonb "opt_in_response", default: {}, null: false
+    t.jsonb "opt_out_response", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "recipients", force: :cascade do |t|
-    t.string "program", null: false
-    t.string "program_case_id", null: false
+    t.string "program_case_id"
     t.string "phone_number", null: false
-    t.bigint "message_batch_id", null: false
+    t.bigint "message_batch_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.enum "sms_status", default: "imported", null: false, enum_type: "recipient_status"
@@ -66,6 +88,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_044422) do
     t.index ["recipient_id"], name: "index_sms_messages_on_recipient_id"
   end
 
+  add_foreign_key "consent_changes", "sms_messages"
   add_foreign_key "message_batches", "message_templates"
   add_foreign_key "recipients", "message_batches"
   add_foreign_key "sms_messages", "recipients"

@@ -33,12 +33,7 @@ class SmsController < ApiController
       direction: :inbound,
       status: params["SmsStatus"].downcase
     )
-
-    if opt_in? sms_message.body
-      ConsentChange.create(new_consent: true, change_source: :sms, sms_message: sms_message)
-    elsif opt_out? sms_message.body
-      ConsentChange.create(new_consent: false, change_source: :sms, sms_message: sms_message)
-    end
+    ConsentService.new.process_consent_change(sms_message)
 
     head :created
   end
@@ -50,20 +45,6 @@ class SmsController < ApiController
     twilio_signature = request.headers['X-Twilio-Signature'] || ''
     twilio_request = validator.validate(request.url, request.POST, twilio_signature)
     head :forbidden unless twilio_request
-  end
-
-  def consent_change?(message_body)
-    opt_out?(message_body) or opt_in?(message_body)
-  end
-
-  def opt_out?(message_body)
-    english_opt_out_keywords = %w(STOP STOPALL UNSUBSCRIBE CANCEL END QUIT)
-    spanish_opt_out_keywords = %w(DETENER FIN CANCELAR SUSCRIBIRSE DEJAR ALTO)
-    english_opt_out_keywords.include? message_body or spanish_opt_out_keywords.include? message_body
-  end
-
-  def opt_in?(message_body)
-    %w(START YES UNSTOP).include? message_body
   end
 
 end
