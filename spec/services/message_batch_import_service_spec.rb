@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe MessageBatchImportService do
 
-  let(:message_template) { MessageTemplate.create(name: 'NotifyMessage', body: 'Notify message body') }
   let(:program) { create(:program) }
+  let(:notify_message_template) { create(:message_template, name: 'NotifyMessage', body: 'Notify message body') }
 
   describe "#import_message_batch" do
     context "when the message_template cannot be found" do
@@ -11,20 +11,20 @@ describe MessageBatchImportService do
     end
 
     context "when the program cannot be found" do
-      specify { expect { described_class.new.import_message_batch(message_template.name, 'NO PROGRAM', 'some_recipients.csv') }.to raise_error(MessageBatchImportService::ProgramNotFound) }
+      specify { expect { described_class.new.import_message_batch(notify_message_template.name, 'NO PROGRAM', 'some_recipients.csv') }.to raise_error(MessageBatchImportService::ProgramNotFound) }
     end
 
     context "when the recipients CSV is not a valid file" do
-      specify { expect { described_class.new.import_message_batch(message_template.name, program.name, 'some_recipients.csv') }.to raise_error(SystemCallError) }
+      specify { expect { described_class.new.import_message_batch(notify_message_template.name, program.name, 'some_recipients.csv') }.to raise_error(SystemCallError) }
     end
 
     context "when the CSV has incorrect headers" do
-      specify { expect { described_class.new.import_message_batch(message_template.name, program.name, file_fixture('recipients_bad_headers.csv')) }.to raise_error(MessageBatchImportService::MissingHeaders) }
+      specify { expect { described_class.new.import_message_batch(notify_message_template.name, program.name, file_fixture('recipients_bad_headers.csv')) }.to raise_error(MessageBatchImportService::MissingHeaders) }
     end
 
     context "when on the happy path" do
       it "creates a MessageBatch" do
-        expect { described_class.new.import_message_batch(message_template.name, program.name, file_fixture('good_recipients.csv')) }
+        expect { described_class.new.import_message_batch(notify_message_template.name, program.name, file_fixture('good_recipients.csv')) }
           .to change(MessageBatch, :count).from(0).to(1)
           .and change(Recipient, :count).from(0).to(2)
       end

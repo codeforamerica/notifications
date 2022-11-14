@@ -22,7 +22,7 @@ describe MessageService do
         allow_any_instance_of(Twilio::REST::RestError).to receive(:code).and_return("123")
         allow_any_instance_of(Twilio::REST::RestError).to receive(:error_message).and_return("api error")
 
-        recipient = Recipient.new
+        recipient = create(:recipient)
         expect { described_class.new.send_message(recipient, "test") }
           .to change(recipient, :sms_status).from("imported").to("api_error")
           .and change(recipient, :sms_api_error_code).from(nil).to("123")
@@ -34,7 +34,7 @@ describe MessageService do
       it "sets the recipient sms_status field appropriately" do
         allow(twilio_messages_double).to receive(:create).and_return(twilio_message_double)
 
-        recipient = Recipient.new
+        recipient = create(:recipient)
         expect { described_class.new.send_message(recipient, "test") }
           .to change(recipient, :sms_status).from("imported").to("api_success")
       end
