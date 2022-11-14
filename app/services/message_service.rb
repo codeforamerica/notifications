@@ -5,7 +5,7 @@ class MessageService
     begin
       message = twilio_client.messages.create(
         from: twilio_number,
-        status_callback: "#{ENV['NGROK_URL']}/sms/status_callback",
+        status_callback: "#{ENV['BASE_URL']}/sms/status_callback",
         to: recipient.phone_number,
         body: body
       )
