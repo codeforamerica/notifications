@@ -21,8 +21,11 @@
 #  fk_rails_...  (message_batch_id => message_batches.id)
 #
 class Recipient < ApplicationRecord
+  include PhoneNumberMethods
   belongs_to :message_batch, optional: true
   has_one :sms_message
-  validates :phone_number, format: { with: /\A\+1\d{10}\z/, message: "%{value} is not a valid phone number"}
+  validates :phone_number, presence: true, phone_number: true
   validates :program_case_id, presence: true, if: -> { message_batch.present? }
+
+  clean_phone_numbers :phone_number
 end

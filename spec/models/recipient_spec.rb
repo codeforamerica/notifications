@@ -23,23 +23,31 @@
 require 'rails_helper'
 
 RSpec.describe Recipient, type: :model do
-  message_batch = MessageBatch.new
+  subject(:recipient) { build(:recipient, phone_number: phone_number) }
 
-  context "when the phone number is valid" do
-    subject { described_class.new(message_batch: message_batch, phone_number: '+11234567890', program_case_id: 'DONT_CARE') }
+  context "when the phone number has no country code and all 10 digits" do
+    let(:phone_number) { '1234567890' }
     it { is_expected.to be_valid }
   end
 
-  context "when the phone number includes spurious characters" do
-    subject { described_class.new(message_batch: message_batch, phone_number: '+1123456789A', program_case_id: 'DONT_CARE') }
-    it "is invalid" do
-      expect(subject).not_to be_valid
-      expect(subject.errors[:phone_number]).to eq ['+1123456789A is not a valid phone number']
+  context "when the phone number has a country code plus 10 digits" do
+    let(:phone_number) { '11234567890' }
+    it "is cleaned up so that it is valid" do
+      subject.save
+      expect(subject.phone_number).to eq '1234567890'
     end
   end
 
-  context "when the phone number is too long" do
-    subject { described_class.new(message_batch: message_batch, phone_number: '+112345678901', program_case_id: 'DONT_CARE') }
+  context "when the phone number includes extra non-digit characters" do
+    let(:phone_number) { '1 (123) 456-7890 extra' }
+    it "is cleaned up so that it is valid" do
+      subject.save
+      expect(subject.phone_number).to eq '1234567890'
+    end
+  end
+
+  context "when the phone number has more than 10 digits" do
+    let(:phone_number) { '+112345678901' }
     it "is invalid" do
       expect(subject).not_to be_valid
       expect(subject.errors[:phone_number]).to eq ['+112345678901 is not a valid phone number']

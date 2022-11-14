@@ -31,5 +31,7 @@ FactoryBot.define do
     body { 'message body' }
     direction { :inbound }
     status { :delivered }
+    from { '4155551212' }
+    to { '5105551212' }
   end
 end
