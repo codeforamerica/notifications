@@ -3,10 +3,7 @@ class ConsentService
   def process_consent_change(sms_message)
     return unless sms_message.direction == "inbound"
     Program.all.each do |program|
-      Rails.logger.info sms_message.body
-      Rails.logger.info program.opt_in_keywords
       opt_in_languages = consent_change_keyword?(sms_message.body, program.opt_in_keywords)
-      Rails.logger.info "OPT IN LANGS: #{opt_in_languages}"
       opt_out_languages = consent_change_keyword?(sms_message.body, program.opt_out_keywords)
       if !opt_in_languages.empty?
         response = Mobility.with_locale(opt_in_languages.first) { program.opt_in_response }
