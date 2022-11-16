@@ -1,3 +1,3 @@
-case_id, phone_number
-ABCD, 4155551212
-567F, 8005551212
+case_id, phone_number, preferred_language
+ABCD, 4155551212, en
+567F, 8005551212, es
