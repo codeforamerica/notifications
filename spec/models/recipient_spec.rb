@@ -4,6 +4,7 @@
 #
 #  id                    :bigint           not null, primary key
 #  phone_number          :string           not null
+#  preferred_language    :enum
 #  sms_api_error_code    :string
 #  sms_api_error_message :string
 #  sms_status            :enum             default("imported"), not null
