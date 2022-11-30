@@ -25,7 +25,7 @@ class SmsController < ApiController
   end
 
   def incoming_message
-    SmsMessage.create(
+    sms_message = SmsMessage.create(
       message_sid: params["MessageSid"],
       from: params["From"],
       to: params["To"],
@@ -33,6 +33,8 @@ class SmsController < ApiController
       direction: :inbound,
       status: params["SmsStatus"].downcase
     )
+    ConsentService.new.process_consent_change(sms_message)
+
     head :created
   end
 
