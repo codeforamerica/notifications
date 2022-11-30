@@ -2,6 +2,7 @@ class MessageService
   include TwilioHelper
 
   def send_message(recipient, body)
+    
     begin
       message = twilio_client.messages.create(
         from: twilio_number,

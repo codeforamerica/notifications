@@ -15,6 +15,16 @@ class ConsentService
     end
   end
 
+  def check_consent(recipient)
+    ConsentChange
+      .joins(:sms_message)
+      .where(sms_message: { from: recipient.phone_number },
+             program: recipient.program)
+      .order(:created_at)
+      .last
+      .new_consent
+  end
+
   private
 
   def record_and_respond_to_consent_change_via_sms(new_consent, response, program, sms_message)
