@@ -26,12 +26,12 @@ RSpec.describe Recipient, type: :model do
   message_batch = MessageBatch.new
 
   context "when the phone number is valid" do
-    subject { described_class.new(message_batch: message_batch, phone_number: '+11234567890') }
+    subject { described_class.new(message_batch: message_batch, phone_number: '+11234567890', program_case_id: 'DONT_CARE') }
     it { is_expected.to be_valid }
   end
 
   context "when the phone number includes spurious characters" do
-    subject { described_class.new(message_batch: message_batch, phone_number: '+1123456789A') }
+    subject { described_class.new(message_batch: message_batch, phone_number: '+1123456789A', program_case_id: 'DONT_CARE') }
     it "is invalid" do
       expect(subject).not_to be_valid
       expect(subject.errors[:phone_number]).to eq ['+1123456789A is not a valid phone number']
@@ -39,7 +39,7 @@ RSpec.describe Recipient, type: :model do
   end
 
   context "when the phone number is too long" do
-    subject { described_class.new(message_batch: message_batch, phone_number: '+112345678901') }
+    subject { described_class.new(message_batch: message_batch, phone_number: '+112345678901', program_case_id: 'DONT_CARE') }
     it "is invalid" do
       expect(subject).not_to be_valid
       expect(subject.errors[:phone_number]).to eq ['+112345678901 is not a valid phone number']
