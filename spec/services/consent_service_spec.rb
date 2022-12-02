@@ -3,6 +3,39 @@ require 'rails_helper'
 describe ConsentService do
 
   let(:program) { create(:program) }
+  let(:recipient) { create(:recipient) }
+
+  describe "#check_consent" do
+
+    context "When no program is specified" do
+      specify {
+        expect {
+          described_class.new.check_consent(recipient, nil)
+        }.to eq(false)
+      }
+    end
+
+    context "When there is no consent change for this program" do
+
+    end
+
+    context "When there are multiple consent changes for this program" do
+
+      context "and the most recent change grants consent" do
+
+      end
+
+      context "and the most recent change revokes consent" do
+
+      end
+
+      context "and the most recent consent change for another program disagrees with this one" do
+
+      end
+
+    end
+
+  end
 
   describe "#process_consent_change" do
     context "When the message does not contain an opt-in or opt-out keyword" do

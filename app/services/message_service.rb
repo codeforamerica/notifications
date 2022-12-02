@@ -1,8 +1,14 @@
 class MessageService
   include TwilioHelper
 
-  def send_message(recipient, body)
-    
+  def send_message(recipient, body, program)
+
+    consent = ConsentService.new.check_consent(recipient, program)
+    unless consent
+      recipient.update(sms_status: :consent_check_failed)
+      return
+    end
+
     begin
       message = twilio_client.messages.create(
         from: twilio_number,
