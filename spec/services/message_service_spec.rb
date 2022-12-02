@@ -16,6 +16,20 @@ describe MessageService do
       allow(twilio_message_double).to receive(:status).and_return(:queued)
     end
 
+    context "when a message fails due to a consent check failure" do
+      it "sets the recipient sms_status field appropriately" do
+        allow(twilio_messages_double).to receive(:create).and_raise(twilio_rest_error_double)
+        allow_any_instance_of(Twilio::REST::RestError).to receive(:code).and_return("123")
+        allow_any_instance_of(Twilio::REST::RestError).to receive(:error_message).and_return("api error")
+
+        recipient = create(:recipient)
+        program = create(:program)
+        create_consent_change(false, recipient, program, DateTime.now - 1)
+        expect { described_class.new.send_message(recipient, "test", nil) }
+          .to change(recipient, :sms_status).from("imported").to("consent_check_failed")
+      end
+    end
+
     context "when a message fails due to an API error" do
       it "sets the recipient sms_status and sms_api_error_* fields appropriately" do
         allow(twilio_messages_double).to receive(:create).and_raise(twilio_rest_error_double)
@@ -23,7 +37,7 @@ describe MessageService do
         allow_any_instance_of(Twilio::REST::RestError).to receive(:error_message).and_return("api error")
 
         recipient = create(:recipient)
-        expect { described_class.new.send_message(recipient, "test") }
+        expect { described_class.new.send_message(recipient, "test", nil) }
           .to change(recipient, :sms_status).from("imported").to("api_error")
           .and change(recipient, :sms_api_error_code).from(nil).to("123")
           .and change(recipient, :sms_api_error_message).from(nil).to("api error")
@@ -35,7 +49,7 @@ describe MessageService do
         allow(twilio_messages_double).to receive(:create).and_return(twilio_message_double)
 
         recipient = create(:recipient)
-        expect { described_class.new.send_message(recipient, "test") }
+        expect { described_class.new.send_message(recipient, "test", nil) }
           .to change(recipient, :sms_status).from("imported").to("api_success")
       end
     end

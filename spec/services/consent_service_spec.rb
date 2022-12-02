@@ -2,35 +2,47 @@ require 'rails_helper'
 
 describe ConsentService do
 
-  let(:program) { create(:program) }
+  let(:snap) { create(:program) }
   let(:recipient) { create(:recipient) }
 
   describe "#check_consent" do
 
     context "When no program is specified" do
       specify {
-        expect {
-          described_class.new.check_consent(recipient, nil)
-        }.to eq(false)
+        expect(described_class.new.check_consent(recipient, nil)).to eq(true)
       }
     end
 
     context "When there is no consent change for this program" do
-
+      specify {
+        expect(described_class.new.check_consent(recipient, snap)).to eq(true)
+      }
     end
 
     context "When there are multiple consent changes for this program" do
 
       context "and the most recent change grants consent" do
-
+        specify {
+          create_consent_change(false, recipient, snap, DateTime.now - 2)
+          create_consent_change(true, recipient, snap, DateTime.now - 1)
+          expect(described_class.new.check_consent(recipient, snap)).to eq(true)
+        }
       end
 
       context "and the most recent change revokes consent" do
-
+        specify {
+          create_consent_change(true, recipient, snap, DateTime.now - 2)
+          create_consent_change(false, recipient, snap, DateTime.now - 1)
+          expect(described_class.new.check_consent(recipient, snap)).to eq(false)
+        }
       end
 
       context "and the most recent consent change for another program disagrees with this one" do
-
+        let(:ccap) { create(:program, name: "CCAP") }
+        specify {
+          create_consent_change(false, recipient, ccap, DateTime.now - 1)
+          expect(described_class.new.check_consent(recipient, snap)).to eq(true)
+        }
       end
 
     end
@@ -62,7 +74,8 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { program.opt_in_response }
+            Mobility.with_locale(:en) { snap.opt_in_response },
+            nil
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -71,7 +84,7 @@ describe ConsentService do
           .to have_attributes(
                 new_consent: true,
                 sms_message: sms_message,
-                program: program
+                program: snap
               )
       }
     end
@@ -86,7 +99,8 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { program.opt_out_response }
+            Mobility.with_locale(:en) { snap.opt_out_response },
+            nil
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -95,7 +109,7 @@ describe ConsentService do
           .to have_attributes(
                 new_consent: false,
                 sms_message: sms_message,
-                program: program
+                program: snap
               )
       }
     end
@@ -110,7 +124,8 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { program.opt_out_response }
+            Mobility.with_locale(:en) { snap.opt_out_response },
+            nil
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -119,7 +134,7 @@ describe ConsentService do
           .to have_attributes(
                 new_consent: false,
                 sms_message: sms_message,
-                program: program
+                program: snap
               )
       }
     end
@@ -139,8 +154,8 @@ describe ConsentService do
 
     context "When the message is a spanish opt-out keyword" do
       before {
-        Mobility.with_locale(:es) { program.opt_out_response = "Adios" }
-        program.save
+        Mobility.with_locale(:es) { snap.opt_out_response = "Adios" }
+        snap.save
       }
 
       let(:sms_message) { build(
@@ -153,7 +168,8 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:es) { program.opt_out_response }
+            Mobility.with_locale(:es) { snap.opt_out_response },
+            nil
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -162,7 +178,7 @@ describe ConsentService do
           .to have_attributes(
                 new_consent: false,
                 sms_message: sms_message,
-                program: program
+                program: snap
               )
       }
     end
@@ -186,7 +202,8 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { wic.opt_out_response }
+            Mobility.with_locale(:en) { wic.opt_out_response },
+            nil
           )
         expect {
           described_class.new.process_consent_change(sms_message)
