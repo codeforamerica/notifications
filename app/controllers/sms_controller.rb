@@ -13,9 +13,9 @@ class SmsController < ApiController
       recipient = sms_message.recipient
       if recipient
         if %w(sent delivered).include? status
-          recipient.update(status: :delivery_success)
+          recipient.update(sms_status: :delivery_success)
         elsif %w(delivery_unknown undelivered failed).include? status
-          recipient.update(status: :delivery_error)
+          recipient.update(sms_status: :delivery_error)
         end
       end
       head :ok
