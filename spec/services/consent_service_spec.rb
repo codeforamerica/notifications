@@ -23,6 +23,7 @@ describe ConsentService do
 
       context "and the most recent change grants consent" do
         specify {
+
           create_consent_change(false, recipient, snap, DateTime.now - 2)
           create_consent_change(true, recipient, snap, DateTime.now - 1)
           expect(described_class.new.check_consent(recipient, snap)).to eq(true)
