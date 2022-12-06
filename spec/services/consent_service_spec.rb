@@ -24,16 +24,16 @@ describe ConsentService do
       context "and the most recent change grants consent" do
         specify {
 
-          create_consent_change(false, recipient, snap, DateTime.now - 2)
-          create_consent_change(true, recipient, snap, DateTime.now - 1)
+          create(:consent_change, new_consent: false, program: snap, phone_number: recipient.phone_number, created_at: DateTime.now - 2)
+          create(:consent_change, new_consent: true, program: snap, phone_number: recipient.phone_number, created_at: DateTime.now - 1)
           expect(described_class.new.check_consent(recipient, snap)).to eq(true)
         }
       end
 
       context "and the most recent change revokes consent" do
         specify {
-          create_consent_change(true, recipient, snap, DateTime.now - 2)
-          create_consent_change(false, recipient, snap, DateTime.now - 1)
+          create(:consent_change, new_consent: true, program: snap, phone_number: recipient.phone_number, created_at: DateTime.now - 2)
+          create(:consent_change, new_consent: false, program: snap, phone_number: recipient.phone_number, created_at: DateTime.now - 1)
           expect(described_class.new.check_consent(recipient, snap)).to eq(false)
         }
       end
@@ -41,7 +41,8 @@ describe ConsentService do
       context "and the most recent consent change for another program disagrees with this one" do
         let(:ccap) { create(:program, name: "CCAP") }
         specify {
-          create_consent_change(false, recipient, ccap, DateTime.now - 1)
+          create(:consent_change, new_consent: false, program: ccap, phone_number: recipient.phone_number, created_at: DateTime.now - 1)
+
           expect(described_class.new.check_consent(recipient, snap)).to eq(true)
         }
       end

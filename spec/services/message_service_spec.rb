@@ -22,16 +22,9 @@ describe MessageService do
 
         recipient = create(:recipient)
         program = create(:program)
-        create_consent_change(false, recipient, program, DateTime.now - 1)
-        # create(
-        #   :consent_change,
-        #   new_consent: false,
-        #   program: program,
-        #   r: recipient,
-        #   created_at: DateTime.now - 1
-        # )
+        create(:consent_change, new_consent: false, program: program, phone_number: recipient.phone_number, created_at: DateTime.now - 1)
 
-        expect { described_class.new.send_message(recipient, "test", nil) }
+        expect { described_class.new.send_message(recipient, "test", program) }
           .to change(recipient, :sms_status).from("imported").to("consent_check_failed")
       end
     end
