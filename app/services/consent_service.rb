@@ -17,12 +17,7 @@ class ConsentService
 
   def check_consent(recipient, program)
     default_consent = true
-    latest_consent_change = ConsentChange
-      .joins(:sms_message)
-      .where(sms_message: { from: recipient.phone_number },
-             program: program)
-      .order(:created_at)
-      .last
+    latest_consent_change = ConsentChange.latest_for(recipient.phone_number, program)
     if latest_consent_change.present?
       latest_consent_change.new_consent
     else

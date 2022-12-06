@@ -22,4 +22,12 @@
 class ConsentChange < ApplicationRecord
   belongs_to :sms_message
   belongs_to :program
+
+  def self.latest_for(phone_number, program)
+      joins(:sms_message)
+      .where(sms_message: { from: phone_number },
+             program: program)
+      .order(:created_at)
+      .last
+  end
 end
