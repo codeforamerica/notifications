@@ -20,5 +20,27 @@
 require 'rails_helper'
 
 RSpec.describe MessageBatch, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  ActiveJob::Base.queue_adapter = :test
+
+  let (:message_batch) { create(:message_batch) }
+  let (:recipient) { create(:recipient, message_batch: message_batch, sms_status: sms_status) }
+
+  describe "#perform_later" do
+    context "when the recipient has not yet been sent a message" do
+      let (:sms_status) { :imported }
+      it "schedules a job" do
+        expect {
+          message_batch.send_messages
+        }.to have_enqueued_job.on_queue(:default).with(recipient.id)
+      end
+    end
+    context "when the recipient has already been sent a message" do
+      let (:sms_status) { :api_success }
+      it "schedules a job" do
+        expect {
+          message_batch.send_messages
+        }.not_to have_enqueued_job.on_queue(:default).with(recipient.id)
+      end
+    end
+    end
 end
