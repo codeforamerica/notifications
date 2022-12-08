@@ -20,4 +20,15 @@ class NotificationsCli < Thor
 
     MessageService.new.send_message(recipient, message_body)
   end
+
+  desc "send_message_batch message_batch_id", "Sends messages to all the recipients in the message batch based on the message template associated with the batch"
+  def send_message_batch(message_batch_id)
+    puts "Sending message batch #{message_batch_id}"
+
+    message_batch = MessageBatch.find(message_batch_id.to_i)
+    message_batch.send_messages
+  rescue ActiveRecord::RecordNotFound
+    puts "Could not find message batch #{message_batch_id}"
+    exit 1
+  end
 end

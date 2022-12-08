@@ -30,4 +30,6 @@ class Recipient < ApplicationRecord
   validates :preferred_language, presence: true, if: -> { message_batch.present? }
 
   clean_phone_numbers :phone_number
+
+  scope :imported, -> { where(sms_status: :imported) }
 end
