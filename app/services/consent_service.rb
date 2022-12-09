@@ -15,12 +15,22 @@ class ConsentService
     end
   end
 
+  def check_consent(recipient, program)
+    default_consent = true
+    latest_consent_change = ConsentChange.latest(recipient.phone_number, program)
+    if latest_consent_change.present?
+      latest_consent_change.new_consent
+    else
+      default_consent
+    end
+  end
+
   private
 
   def record_and_respond_to_consent_change_via_sms(new_consent, response, program, sms_message)
     ConsentChange.create(new_consent: new_consent, change_source: "sms", sms_message: sms_message, program: program)
     recipient = Recipient.create(phone_number: sms_message.from)
-    MessageService.new.send_message(recipient, response)
+    MessageService.new.send_message(recipient, response, nil)
   end
 
   def consent_change_keyword?(text, keywords_by_language)
