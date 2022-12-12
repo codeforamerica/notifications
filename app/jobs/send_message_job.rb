@@ -9,6 +9,8 @@ class SendMessageJob < ApplicationJob
       return
     end
 
-    MessageService.new.send_message(recipient, recipient.message_batch.message_template.body)
+    message_body = recipient.message_batch.message_template.body_backend.read(recipient.preferred_language)
+    # TODO if message_body is nil
+    MessageService.new.send_message(recipient, message_body)
   end
 end
