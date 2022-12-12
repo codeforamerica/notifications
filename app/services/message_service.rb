@@ -12,7 +12,6 @@ class MessageService
     begin
       message = twilio_client.messages.create(
         messaging_service_sid: twilio_messaging_service_sid,
-        status_callback: "#{ENV['BASE_URL']}/sms/status_callback",
         to: recipient.phone_number,
         body: body
       )
