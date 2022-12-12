@@ -29,4 +29,8 @@ class MessageBatch < ApplicationRecord
       SendMessageJob.perform_later recipient_id
     end
   end
+
+  def get_localized_message_body(locale)
+    Mobility.with_locale(locale) { message_template.body }
+  end
 end
