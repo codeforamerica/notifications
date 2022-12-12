@@ -21,10 +21,10 @@ describe MessageService do
         allow(twilio_messages_double).to receive(:create).and_return(twilio_message_double)
 
         recipient = create(:recipient)
-        program = create(:program)
-        create(:consent_change, new_consent: false, program: program, phone_number: recipient.phone_number, created_at: DateTime.now - 1)
+        # program = create(:program)
+        create(:consent_change, new_consent: false, program: recipient.program, phone_number: recipient.phone_number, created_at: DateTime.now - 1)
 
-        expect { described_class.new.send_message(recipient, "test", program) }
+        expect { described_class.new.send_message(recipient, "test") }
           .to change(recipient, :sms_status).from("imported").to("consent_check_failed")
       end
     end
@@ -36,7 +36,7 @@ describe MessageService do
         allow_any_instance_of(Twilio::REST::RestError).to receive(:error_message).and_return("api error")
 
         recipient = create(:recipient)
-        expect { described_class.new.send_message(recipient, "test", nil) }
+        expect { described_class.new.send_message(recipient, "test") }
           .to change(recipient, :sms_status).from("imported").to("api_error")
           .and change(recipient, :sms_api_error_code).from(nil).to("123")
           .and change(recipient, :sms_api_error_message).from(nil).to("api error")
@@ -48,7 +48,7 @@ describe MessageService do
         allow(twilio_messages_double).to receive(:create).and_return(twilio_message_double)
 
         recipient = create(:recipient)
-        expect { described_class.new.send_message(recipient, "test", nil) }
+        expect { described_class.new.send_message(recipient, "test") }
           .to change(recipient, :sms_status).from("imported").to("api_success")
       end
     end
