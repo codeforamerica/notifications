@@ -76,8 +76,7 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { snap.opt_in_response },
-            nil
+            Mobility.with_locale(:en) { snap.opt_in_response }
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -101,8 +100,7 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { snap.opt_out_response },
-            nil
+            Mobility.with_locale(:en) { snap.opt_out_response }
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -126,8 +124,7 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { snap.opt_out_response },
-            nil
+            Mobility.with_locale(:en) { snap.opt_out_response }
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -170,8 +167,7 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:es) { snap.opt_out_response },
-            nil
+            Mobility.with_locale(:es) { snap.opt_out_response }
           )
         expect {
           described_class.new.process_consent_change(sms_message)
@@ -204,8 +200,7 @@ describe ConsentService do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            Mobility.with_locale(:en) { wic.opt_out_response },
-            nil
+            Mobility.with_locale(:en) { wic.opt_out_response }
           )
         expect {
           described_class.new.process_consent_change(sms_message)

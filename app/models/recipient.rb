@@ -32,4 +32,6 @@ class Recipient < ApplicationRecord
   clean_phone_numbers :phone_number
 
   scope :imported, -> { where(sms_status: :imported) }
+
+  delegate :program, to: :message_batch, allow_nil: true
 end
