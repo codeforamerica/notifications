@@ -28,5 +28,6 @@ module Notifications
       end if File.exists?(env_file)
     end
 
+    config.active_job.queue_adapter = :good_job
   end
 end
