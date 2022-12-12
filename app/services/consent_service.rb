@@ -30,7 +30,7 @@ class ConsentService
   def record_and_respond_to_consent_change_via_sms(new_consent, response, program, sms_message)
     ConsentChange.create(new_consent: new_consent, change_source: "sms", sms_message: sms_message, program: program)
     recipient = Recipient.create(phone_number: sms_message.from)
-    MessageService.new.send_message(recipient, response, nil)
+    MessageService.new.send_message(recipient, response)
   end
 
   def consent_change_keyword?(text, keywords_by_language)
