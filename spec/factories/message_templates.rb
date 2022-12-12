@@ -15,6 +15,10 @@
 FactoryBot.define do
   factory :message_template do
     name { 'SimpleMessage' }
-    body { 'Simple message body' }
+
+    after(:build) do |message_template, evaluator|
+      Mobility.with_locale(:en) { message_template.body = 'Simple message body'}
+      Mobility.with_locale(:es) { message_template.body = 'Cuerpo de mensaje sencillo'}
+    end
   end
 end
