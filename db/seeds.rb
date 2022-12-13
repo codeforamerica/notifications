@@ -22,11 +22,11 @@
 snap = Program.new(
   name: "SNAP",
   opt_in_keywords: {
-    en: %w(START UNSTOP STARTSNAP),
-    es: %w(COMENZAR COMENZARSNAP DESATASCAR) },
+    en: %w(START UNSTOP),
+    es: %w(COMENZAR DESATASCAR) },
   opt_out_keywords: {
-    en: %w(STOP END CANCEL UNSUBSCRIBE QUIT STOPSNAP),
-    es: %w(DETENER FIN CANCELAR SUSCRIBIRSE DEJAR ALTOSNAP) },
+    en: %w(STOP END CANCEL UNSUBSCRIBE QUIT SNAPSTOP),
+    es: %w(DETENER FIN CANCELAR SUSCRIBIRSE DEJAR) },
   help_keywords: {
     en: %w(HELP INFO),
     es: %w(AYUDA) },
