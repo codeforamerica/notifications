@@ -2,10 +2,12 @@ require 'rails_helper'
 
 RSpec.describe SendMessageJob, type: :job do
 
-  let (:message_template) { create(:message_template, english_body: 'hello', spanish_body: 'ola')}
+  let (:message_template) { create(:message_template, english_body: english_body, spanish_body: spanish_body)}
   let (:message_batch) { create(:message_batch, message_template: message_template) }
   let (:recipient) { create(:recipient, message_batch: message_batch, sms_status: sms_status, preferred_language: preferred_language) }
   let (:preferred_language) { :en }
+  let (:english_body) { 'hello' }
+  let (:spanish_body) { 'ola' }
 
   describe "when performed" do
     let (:message_service) { instance_double(MessageService) }
@@ -35,6 +37,27 @@ RSpec.describe SendMessageJob, type: :job do
           allow(MessageService).to receive(:new) { message_service }
           expect(message_service).to receive(:send_message).with(recipient, 'ola')
           described_class.perform_now recipient.id
+        end
+      end
+
+      context "when the template has placeholders" do
+        let (:english_body) { 'hello, %{preferred_name}'}
+
+        context "when the recipient has the corresponding extra params" do
+          it "sends a message with the placeholders filled in" do
+            recipient.update(params: {preferred_name: 'Hans'})
+            allow(MessageService).to receive(:new) { message_service }
+            expect(message_service).to receive(:send_message).with(recipient, 'hello, Hans')
+            described_class.perform_now recipient.id
+          end
+        end
+        context "when the recipient does not have the corresponding extra params" do
+          it "sends a message with the placeholders filled in" do
+            recipient.update(params: { name: 'Hans' })
+            allow(MessageService).to receive(:new) { message_service }
+            expect { described_class.perform_now recipient.id; recipient.reload }
+              .to change(recipient, :sms_status).to("api_error").and change(recipient, :sms_api_error_message).to("missing interpolation argument :preferred_name in \"hello, %{preferred_name}\" ({:name=>\"Hans\"} given)")
+          end
         end
       end
 

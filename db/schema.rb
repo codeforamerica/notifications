@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_13_010258) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_13_143751) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -112,6 +112,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_010258) do
     t.string "sms_api_error_code"
     t.string "sms_api_error_message"
     t.enum "preferred_language", enum_type: "locale"
+    t.jsonb "params"
     t.index ["message_batch_id"], name: "index_recipients_on_message_batch_id"
   end
 
