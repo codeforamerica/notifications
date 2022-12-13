@@ -33,12 +33,52 @@ class SmsController < ApiController
       direction: :inbound,
       status: params["SmsStatus"].downcase
     )
-    ConsentService.new.process_consent_change(sms_message)
+    process_keyword(sms_message)
 
     head :created
   end
 
   private
+
+  TWILIO_KEYWORDS = %w(STOP START UNSTOP HELP)
+  def process_keyword(sms_message)
+    Program.all.each do |program|
+      response = nil
+      if keyword?(sms_message.body, program.opt_in_keywords)
+        opt_in_language = keyword_language(sms_message.body, program.opt_in_keywords).first
+        response = Mobility.with_locale(opt_in_language) { program.opt_in_response }
+        ConsentChange.create(new_consent: true, change_source: "sms", sms_message: sms_message, program: program)
+      elsif keyword?(sms_message.body, program.opt_out_keywords)
+        opt_out_language = keyword_language(sms_message.body, program.opt_out_keywords).first
+        response = Mobility.with_locale(opt_out_language) { program.opt_out_response }
+        ConsentChange.create(new_consent: false, change_source: "sms", sms_message: sms_message, program: program)
+      elsif keyword?(sms_message.body, program.help_keywords)
+        help_language = keyword_language(sms_message.body, program.help_keywords).first
+        response = Mobility.with_locale(help_language) { program.help_response }
+      end
+      twilio_responded = TWILIO_KEYWORDS.any?{ |s| s.casecmp(sms_message.body)==0 }
+      if response.present? and !twilio_responded
+        recipient = Recipient.create(phone_number: sms_message.from)
+        MessageService.new.send_message(recipient, response)
+      end
+    end
+  end
+
+  def keyword?(text, keywords_by_language)
+    keywords_by_language.any? do |language, keywords|
+      keywords_by_language[language].any? do |keyword|
+        keyword.casecmp?(text)
+      end
+    end
+  end
+
+  def keyword_language(text, keywords_by_language)
+    keywords_by_language.keys.select do |language|
+      keywords_by_language[language].any? do |keyword|
+        keyword.casecmp?(text)
+      end
+    end
+  end
 
   def ensure_twilio_request
     validator = Twilio::Security::RequestValidator.new(twilio_auth_token)
