@@ -24,6 +24,7 @@ class MessageBatchImportService
       Recipient.create(program_case_id: row[:case_id], phone_number: phone_number, message_batch: message_batch, preferred_language: row[:preferred_language].strip)
       created_count += 1
     end
+    puts "MessageBatch #{message_batch.id} created with #{created_count} recipients"
   end
 
   private
