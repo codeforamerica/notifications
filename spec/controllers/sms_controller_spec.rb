@@ -58,6 +58,17 @@ describe SmsController do
       }
     end
 
+    context "When the message is a non-Twilio-handled spanish help keyword" do
+      let(:message_body) { 'INFOTESTSPANISH' }
+      specify {
+        expect_any_instance_of(MessageService).to receive(:send_message).with(
+          anything,
+          Mobility.with_locale(:es) { snap.help_response }
+        )
+        post :incoming_message, params: params
+      }
+    end
+
     context "When the message is a Twilio-handled keyword" do
       let(:message_body) { 'HELP' }
       specify {
