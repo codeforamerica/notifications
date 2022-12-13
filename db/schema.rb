@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_08_224311) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_13_010258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -98,6 +98,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_08_224311) do
     t.jsonb "opt_out_response", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "help_keywords", null: false
+    t.jsonb "help_response", default: {}, null: false
   end
 
   create_table "recipients", force: :cascade do |t|
