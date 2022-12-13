@@ -17,14 +17,13 @@ class MessageBatchImportService
 
     message_batch = MessageBatch.create(message_template: message_template, program: program)
 
-    created_count = 0
     CSV.foreach(recipient_csv, headers: true, header_converters: :symbol) do |row|
       raise MissingHeaders if REQUIRED_HEADERS.difference(row.headers).any?
       phone_number = convert_phone_number(row[:phone_number])
       Recipient.create(program_case_id: row[:case_id], phone_number: phone_number, message_batch: message_batch, preferred_language: row[:preferred_language].strip)
-      created_count += 1
     end
-    puts "MessageBatch #{message_batch.id} created with #{created_count} recipients"
+
+    message_batch
   end
 
   private
