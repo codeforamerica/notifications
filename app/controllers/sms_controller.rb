@@ -79,7 +79,7 @@ class SmsController < ApiController
       end
     end
   end
-  
+
   def ensure_twilio_request
     validator = Twilio::Security::RequestValidator.new(twilio_auth_token)
     twilio_signature = request.headers['X-Twilio-Signature'] || ''
