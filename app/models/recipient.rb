@@ -3,6 +3,7 @@
 # Table name: recipients
 #
 #  id                    :bigint           not null, primary key
+#  params                :jsonb
 #  phone_number          :string           not null
 #  preferred_language    :enum
 #  sms_api_error_code    :string

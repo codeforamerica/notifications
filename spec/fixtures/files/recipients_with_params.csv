@@ -1,0 +1,3 @@
+case_id, phone_number, preferred_language, preferred_name, renewal_date
+ABCD, 4155551212, en, Hans, "2023-01-20"
+567F, 8005551212, es, Luke, "2023-01-20"

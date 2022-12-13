@@ -28,6 +28,17 @@ describe MessageBatchImportService do
           .to change(MessageBatch, :count).from(0).to(1)
           .and change(Recipient, :count).from(0).to(2)
       end
+      it "creates the recipients" do
+        message_batch = described_class.new.import_message_batch(notify_message_template.name, program.name, file_fixture('good_recipients.csv'))
+        expect(message_batch.recipients.pluck(:program_case_id, :phone_number)).to contain_exactly(['ABCD', '4155551212'], ['567F', '8005551212'])
+      end
+    end
+
+    context "when there are extra fields in the CSV" do
+      it "creates the recipients" do
+        message_batch = described_class.new.import_message_batch(notify_message_template.name, program.name, file_fixture('recipients_with_params.csv'))
+        expect(message_batch.recipients.pluck(:params)).to contain_exactly({preferred_name: 'Luke', renewal_date: '2023-01-20'}.stringify_keys, {preferred_name: 'Hans', renewal_date: '2023-01-20'}.stringify_keys)
+      end
     end
   end
 end
