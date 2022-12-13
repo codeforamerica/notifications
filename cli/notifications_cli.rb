@@ -3,7 +3,9 @@ require File.expand_path('../config/environment', __dir__)
 class NotificationsCli < Thor
   desc "import_message_batch message_template_name program_name recipients_csv", "Import a new message batch associated with program to send message named message_template_name to recipients_csv "
   def import_message_batch(message_template_name, program_name, recipients_csv)
-    MessageBatchImportService.new.import_message_batch(message_template_name, program_name, recipients_csv)
+    message_batch = MessageBatchImportService.new.import_message_batch(message_template_name, program_name, recipients_csv)
+    puts "MessageBatch #{message_batch.id} created with #{message_batch.recipients.count} recipients"
+
   rescue MessageBatchImportService::MessageTemplateNotFound
     puts "Missing Message Template: Cannot find template named #{message_template_name}"
   rescue MessageBatchImportService::MissingHeaders
