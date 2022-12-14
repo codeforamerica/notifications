@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_14_192501) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_14_214051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -18,7 +18,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_192501) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "locale", ["en", "es"]
-  create_enum "recipient_status", ["imported", "consent_check_failed", "api_error", "api_success", "delivery_error", "delivery_success"]
+  create_enum "recipient_status", ["imported", "consent_check_failed", "api_error", "api_success", "delivery_error", "delivery_success", "data_error"]
   create_enum "sms_message_direction", ["inbound", "outbound-api", "outbound-call", "outbound-reply"]
   create_enum "sms_message_status", ["accepted", "scheduled", "canceled", "queued", "sending", "sent", "failed", "delivered", "undelivered", "receiving", "received", "read"]
 

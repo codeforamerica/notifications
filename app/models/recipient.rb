@@ -39,6 +39,7 @@ class Recipient < ApplicationRecord
     api_success: "api_success",
     delivery_error: "delivery_error",
     delivery_success: "delivery_success",
+    data_error: 'data_error',
   }, prefix: :sms_status
 
   validates :phone_number, presence: true, phone_number: true
