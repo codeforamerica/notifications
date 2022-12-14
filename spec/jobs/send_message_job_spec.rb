@@ -52,11 +52,11 @@ RSpec.describe SendMessageJob, type: :job do
           end
         end
         context "when the recipient does not have the corresponding extra params" do
-          it "sends a message with the placeholders filled in" do
+          it "records a 'data_error'" do
             recipient.update(params: { name: 'Hans' })
             allow(MessageService).to receive(:new) { message_service }
             expect { described_class.perform_now recipient.id; recipient.reload }
-              .to change(recipient, :sms_status).to("api_error").and change(recipient, :sms_error_message).to("missing interpolation argument :preferred_name in \"hello, %{preferred_name}\" ({:name=>\"Hans\"} given)")
+              .to change(recipient, :sms_status).to("data_error").and change(recipient, :sms_error_message).to("missing interpolation argument :preferred_name in \"hello, %{preferred_name}\" ({:name=>\"Hans\"} given)")
           end
         end
       end

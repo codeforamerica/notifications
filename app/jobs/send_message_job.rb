@@ -13,7 +13,7 @@ class SendMessageJob < ApplicationJob
       message_body = build_message_body(recipient)
     rescue I18n::MissingInterpolationArgument => exception
       recipient.update(
-        sms_status: :api_error,
+        sms_status: :data_error,
         sms_error_message: exception.message
       )
       return
