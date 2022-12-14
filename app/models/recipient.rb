@@ -26,6 +26,21 @@ class Recipient < ApplicationRecord
   include PhoneNumberMethods
   belongs_to :message_batch, optional: true
   has_one :sms_message
+
+  enum :preferred_language, {
+    en: "en",
+    es: "es",
+  }
+
+  enum :sms_status, {
+    imported: "imported",
+    consent_check_failed: "consent_check_failed",
+    api_error: "api_error",
+    api_success: "api_success",
+    delivery_error: "delivery_error",
+    delivery_success: "delivery_success",
+  }, prefix: :sms_status
+
   validates :phone_number, presence: true, phone_number: true
   validates :program_case_id, presence: true, if: -> { message_batch.present? }
   validates :preferred_language, presence: true, if: -> { message_batch.present? }
