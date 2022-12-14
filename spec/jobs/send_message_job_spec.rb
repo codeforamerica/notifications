@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe SendMessageJob, type: :job do
 
-  let (:recipient) { create(:recipient, sms_status: sms_status, preferred_language: preferred_language) }
+  let (:message_template) { create(:message_template, english_body: 'hello', spanish_body: 'ola')}
+  let (:message_batch) { create(:message_batch, message_template: message_template) }
+  let (:recipient) { create(:recipient, message_batch: message_batch, sms_status: sms_status, preferred_language: preferred_language) }
   let (:preferred_language) { :en }
-
-
 
   describe "when performed" do
     let (:message_service) { instance_double(MessageService) }
@@ -23,7 +23,7 @@ RSpec.describe SendMessageJob, type: :job do
 
         it "sends a message in English" do
           allow(MessageService).to receive(:new) { message_service }
-          Mobility.with_locale(preferred_language) { expect(message_service).to receive(:send_message).with(recipient, recipient.message_batch.message_template.body) }
+          expect(message_service).to receive(:send_message).with(recipient, 'hello')
           described_class.perform_now recipient.id
         end
       end
@@ -33,7 +33,7 @@ RSpec.describe SendMessageJob, type: :job do
 
         it "sends a message in Spanish" do
           allow(MessageService).to receive(:new) { message_service }
-          Mobility.with_locale(preferred_language) { expect(message_service).to receive(:send_message).with(recipient, recipient.message_batch.message_template.body) }
+          expect(message_service).to receive(:send_message).with(recipient, 'ola')
           described_class.perform_now recipient.id
         end
       end
