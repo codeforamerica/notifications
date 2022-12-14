@@ -21,6 +21,11 @@ describe SmsController do
     context "When the message does not contain a keyword" do
       let(:message_body) { 'Hello!' }
       specify {
+        expect_any_instance_of(MessageService)
+          .to receive(:send_message).with(
+            anything,
+            "PLACEHOLDER AUTORESPONSE"
+          )
         expect {
           post :incoming_message, params: params
         }.to_not change { ConsentChange.count }
@@ -120,6 +125,11 @@ describe SmsController do
     context "When the message contains a keyword and additional text" do
       let(:message_body) { 'stoptest please' }
       specify {
+        expect_any_instance_of(MessageService)
+          .to receive(:send_message).with(
+            anything,
+            "PLACEHOLDER AUTORESPONSE"
+          )
         expect {
           post :incoming_message, params: params
         }.to_not change { ConsentChange.count }
