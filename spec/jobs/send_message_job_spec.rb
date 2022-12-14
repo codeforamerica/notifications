@@ -56,7 +56,7 @@ RSpec.describe SendMessageJob, type: :job do
             recipient.update(params: { name: 'Hans' })
             allow(MessageService).to receive(:new) { message_service }
             expect { described_class.perform_now recipient.id; recipient.reload }
-              .to change(recipient, :sms_status).to("api_error").and change(recipient, :sms_api_error_message).to("missing interpolation argument :preferred_name in \"hello, %{preferred_name}\" ({:name=>\"Hans\"} given)")
+              .to change(recipient, :sms_status).to("api_error").and change(recipient, :sms_error_message).to("missing interpolation argument :preferred_name in \"hello, %{preferred_name}\" ({:name=>\"Hans\"} given)")
           end
         end
       end

@@ -37,8 +37,8 @@ describe MessageService do
         recipient = create(:recipient)
         expect { described_class.new.send_message(recipient, "test") }
           .to change(recipient, :sms_status).from("imported").to("api_error")
-          .and change(recipient, :sms_api_error_code).from(nil).to("123")
-          .and change(recipient, :sms_api_error_message).from(nil).to("api error")
+          .and change(recipient, :sms_error_code).from(nil).to("123")
+          .and change(recipient, :sms_error_message).from(nil).to("api error")
       end
     end
 
