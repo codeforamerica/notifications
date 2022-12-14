@@ -2,17 +2,17 @@
 #
 # Table name: recipients
 #
-#  id                    :bigint           not null, primary key
-#  params                :jsonb
-#  phone_number          :string           not null
-#  preferred_language    :enum
-#  sms_api_error_code    :string
-#  sms_api_error_message :string
-#  sms_status            :enum             default("imported"), not null
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  message_batch_id      :bigint
-#  program_case_id       :string
+#  id                 :bigint           not null, primary key
+#  params             :jsonb
+#  phone_number       :string           not null
+#  preferred_language :enum
+#  sms_error_code     :string
+#  sms_error_message  :string
+#  sms_status         :enum             default("imported"), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  message_batch_id   :bigint
+#  program_case_id    :string
 #
 # Indexes
 #

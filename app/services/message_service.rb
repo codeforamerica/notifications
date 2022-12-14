@@ -18,8 +18,8 @@ class MessageService
     rescue Twilio::REST::RestError => error
       recipient.update(
         sms_status: :api_error,
-        sms_api_error_code: error.code,
-        sms_api_error_message: error.error_message
+        sms_error_code: error.code,
+        sms_error_message: error.error_message
       )
     else
       recipient.update(sms_status: :api_success)
