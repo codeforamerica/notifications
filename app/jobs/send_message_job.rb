@@ -10,6 +10,7 @@ class SendMessageJob < ApplicationJob
     end
 
     message_body = recipient.message_batch.get_localized_message_body(recipient.preferred_language)
+
     # TODO if message_body is nil
     MessageService.new.send_message(recipient, message_body)
   end
