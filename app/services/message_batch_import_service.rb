@@ -17,11 +17,16 @@ class MessageBatchImportService
 
     message_batch = MessageBatch.create(message_template: message_template, program: program)
 
+    row_count = 0
     CSV.foreach(recipient_csv, headers: true, header_converters: :symbol, strip: true) do |row|
       raise MissingHeaders if REQUIRED_HEADERS.difference(row.headers).any?
-      phone_number = convert_phone_number(row[:phone_number])
+      row_count += 1
       params = extract_params(row)
-      Recipient.create(program_case_id: row[:case_id], phone_number: phone_number, message_batch: message_batch, preferred_language: row[:preferred_language], params: params)
+      begin
+        Recipient.create!(program_case_id: row[:case_id], phone_number: row[:phone_number], message_batch: message_batch, preferred_language: row[:preferred_language], params: params)
+      rescue ActiveRecord::RecordInvalid => e
+        Rails.logger.error "Row #{row_count} failed: #{e.message}"
+      end
     end
 
     message_batch
@@ -31,17 +36,5 @@ class MessageBatchImportService
 
   def extract_params(row)
     row.to_h.except(*REQUIRED_HEADERS)
-  end
-
-  def convert_phone_number(phone_number)
-    if phone_number =~ /\A\+1\d{10}\z/
-      phone_number
-    elsif phone_number =~ /\A1\d{10}\z/
-      '+' + phone_number
-    elsif phone_number =~ /\A\d{10}\z/
-      '+1' + phone_number
-    else
-      raise InvalidPhoneNumberException
-    end
   end
 end
