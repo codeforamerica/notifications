@@ -35,7 +35,7 @@ class SmsController < ApiController
     )
     is_keyword = process_keyword(sms_message)
     unless is_keyword
-      autoresponse = "PLACEHOLDER AUTORESPONSE"
+      autoresponse = "CT DSS SNAP messages. This inbox is not monitored. Get help by logging into mydss.ct.gov or calling 855-626-6632. Reply OptOutSNAP to unsubscribe."
       recipient = Recipient.create(phone_number: sms_message.from)
       MessageService.new.send_message(recipient, autoresponse)
     end

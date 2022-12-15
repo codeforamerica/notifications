@@ -24,7 +24,7 @@ describe SmsController do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            "PLACEHOLDER AUTORESPONSE"
+            "CT DSS SNAP messages. This inbox is not monitored. Get help by logging into mydss.ct.gov or calling 855-626-6632. Reply OptOutSNAP to unsubscribe."
           )
         expect {
           post :incoming_message, params: params
@@ -128,7 +128,7 @@ describe SmsController do
         expect_any_instance_of(MessageService)
           .to receive(:send_message).with(
             anything,
-            "PLACEHOLDER AUTORESPONSE"
+            "CT DSS SNAP messages. This inbox is not monitored. Get help by logging into mydss.ct.gov or calling 855-626-6632. Reply OptOutSNAP to unsubscribe."
           )
         expect {
           post :incoming_message, params: params
