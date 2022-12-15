@@ -18,7 +18,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_15_005406) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "locale", ["en", "es"]
-  create_enum "recipient_status", ["imported", "consent_check_failed", "api_error", "api_success", "delivery_error", "delivery_success"]
+  create_enum "recipient_status", ["imported", "consent_check_failed", "api_error", "api_success", "delivery_error", "delivery_success", "data_error"]
   create_enum "sms_message_direction", ["inbound", "outbound-api", "outbound-call", "outbound-reply"]
   create_enum "sms_message_status", ["accepted", "scheduled", "canceled", "queued", "sending", "sent", "failed", "delivered", "undelivered", "receiving", "received", "read"]
 
@@ -109,9 +109,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_15_005406) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.enum "sms_status", default: "imported", null: false, enum_type: "recipient_status"
-    t.string "sms_api_error_code"
-    t.string "sms_api_error_message"
+    t.string "sms_error_code"
+    t.string "sms_error_message"
     t.enum "preferred_language", enum_type: "locale"
+    t.jsonb "params"
     t.index ["message_batch_id"], name: "index_recipients_on_message_batch_id"
   end
 
