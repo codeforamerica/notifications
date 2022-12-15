@@ -9,6 +9,7 @@ describe SmsController do
     end
 
     let!(:snap) { create(:program) }
+    let(:autoresponse) { "CT DSS SNAP messages. This inbox is not monitored. Get help by logging into mydss.ct.gov or calling 855-626-6632. Reply OptOutSNAP to unsubscribe." }
 
     let(:params) { {
       MessageSid: 'abc',
@@ -22,7 +23,7 @@ describe SmsController do
       let(:message_body) { 'Hello!' }
       specify {
         expect_any_instance_of(MessageService)
-          .to receive(:send_message).with(anything, I18n.t(:autoresponse))
+          .to receive(:send_message).with(anything, autoresponse)
         expect {
           post :incoming_message, params: params
         }.to_not change { ConsentChange.count }
@@ -123,7 +124,7 @@ describe SmsController do
       let(:message_body) { 'stoptest please' }
       specify {
         expect_any_instance_of(MessageService)
-          .to receive(:send_message).with(anything, I18n.t(:autoresponse))
+          .to receive(:send_message).with(anything, autoresponse)
         expect {
           post :incoming_message, params: params
         }.to_not change { ConsentChange.count }
