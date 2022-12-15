@@ -10,10 +10,10 @@
 #  direction     :enum             not null
 #  error_code    :string
 #  error_message :string
-#  from          :string
+#  from          :string           not null
 #  message_sid   :string
 #  status        :enum             not null
-#  to            :string
+#  to            :string           not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  recipient_id  :bigint

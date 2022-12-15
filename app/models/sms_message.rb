@@ -10,10 +10,10 @@
 #  direction     :enum             not null
 #  error_code    :string
 #  error_message :string
-#  from          :string
+#  from          :string           not null
 #  message_sid   :string
 #  status        :enum             not null
-#  to            :string
+#  to            :string           not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  recipient_id  :bigint
@@ -27,7 +27,12 @@
 #  fk_rails_...  (recipient_id => recipients.id)
 #
 class SmsMessage < ApplicationRecord
+  include PhoneNumberMethods
   belongs_to :recipient, optional: true
+  validates :from, presence: true, phone_number: true
+  validates :to, presence: true, phone_number: true
+  clean_phone_numbers :from
+  clean_phone_numbers :to
 
   enum :direction, { inbound: "inbound",
                      outbound_api: "outbound-api",
