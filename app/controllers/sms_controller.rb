@@ -33,7 +33,11 @@ class SmsController < ApiController
       direction: :inbound,
       status: params["SmsStatus"].downcase
     )
-    process_keyword(sms_message)
+    is_keyword = process_keyword(sms_message)
+    unless is_keyword
+      recipient = Recipient.create(phone_number: sms_message.from)
+      MessageService.new.send_message(recipient, I18n.t(:autoresponse))
+    end
 
     head :created
   end
@@ -42,17 +46,21 @@ class SmsController < ApiController
 
   TWILIO_KEYWORDS = %w(STOP START UNSTOP HELP)
   def process_keyword(sms_message)
+    message_is_keyword = false
     Program.all.each do |program|
       response = nil
       if keyword?(sms_message.body, program.opt_in_keywords)
+        message_is_keyword = true
         opt_in_language = keyword_language(sms_message.body, program.opt_in_keywords).first
         response = Mobility.with_locale(opt_in_language) { program.opt_in_response }
         ConsentChange.create(new_consent: true, change_source: "sms", sms_message: sms_message, program: program)
       elsif keyword?(sms_message.body, program.opt_out_keywords)
+        message_is_keyword = true
         opt_out_language = keyword_language(sms_message.body, program.opt_out_keywords).first
         response = Mobility.with_locale(opt_out_language) { program.opt_out_response }
         ConsentChange.create(new_consent: false, change_source: "sms", sms_message: sms_message, program: program)
       elsif keyword?(sms_message.body, program.help_keywords)
+        message_is_keyword = true
         help_language = keyword_language(sms_message.body, program.help_keywords).first
         response = Mobility.with_locale(help_language) { program.help_response }
       end
@@ -62,6 +70,7 @@ class SmsController < ApiController
         MessageService.new.send_message(recipient, response)
       end
     end
+    message_is_keyword
   end
 
   def keyword?(text, keywords_by_language)
