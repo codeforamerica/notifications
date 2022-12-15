@@ -10,7 +10,7 @@
 #  direction     :enum             not null
 #  error_code    :string
 #  error_message :string
-#  from          :string           not null
+#  from          :string
 #  message_sid   :string
 #  status        :enum             not null
 #  to            :string           not null
@@ -29,7 +29,7 @@
 class SmsMessage < ApplicationRecord
   include PhoneNumberMethods
   belongs_to :recipient, optional: true
-  validates :from, presence: true, phone_number: true
+  validates :from, phone_number: true
   validates :to, presence: true, phone_number: true
   clean_phone_numbers :from
   clean_phone_numbers :to
