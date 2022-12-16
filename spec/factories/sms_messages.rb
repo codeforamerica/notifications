@@ -10,7 +10,7 @@
 #  direction     :enum             not null
 #  error_code    :string
 #  error_message :string
-#  from          :string           not null
+#  from          :string
 #  message_sid   :string
 #  status        :enum             not null
 #  to            :string           not null

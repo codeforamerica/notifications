@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_15_005406) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_15_231656) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -118,7 +118,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_15_005406) do
 
   create_table "sms_messages", force: :cascade do |t|
     t.string "message_sid"
-    t.string "from", null: false
+    t.string "from"
     t.string "to", null: false
     t.text "body"
     t.datetime "date_created"
