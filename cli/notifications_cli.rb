@@ -10,6 +10,8 @@ class NotificationsCli < Thor
     puts "Missing Message Template: Cannot find template named #{message_template_name}"
   rescue MessageBatchImportService::MissingHeaders
     puts "Missing Headers: Required headers were not found in #{recipients_csv}"
+  rescue Aws::Errors::ServiceError => e
+    puts "AWS Error: #{e.message}"
   rescue Exception => e
     puts e.message
   end
