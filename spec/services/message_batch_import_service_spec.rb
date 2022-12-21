@@ -14,6 +14,16 @@ describe MessageBatchImportService do
       specify { expect { described_class.new.import_message_batch(notify_message_template.name, 'NO PROGRAM', 'some_recipients.csv') }.to raise_error(MessageBatchImportService::ProgramNotFound) }
     end
 
+    context "when the recipients CSV is an S3 URL" do
+      let(:aws_client_double) { instance_double(Aws::S3::Client) }
+
+      it "uses the AWS S3 Client" do
+        expect(Aws::S3::Client).to receive(:new).and_return(aws_client_double)
+        expect(aws_client_double).to receive(:get_object).with({ bucket: "bucket_name", key: "file_name"}, target: anything)
+        described_class.new.import_message_batch(notify_message_template.name, program.name, 's3://bucket_name/file_name')
+      end
+    end
+
     context "when the recipients CSV is not a valid file" do
       specify { expect { described_class.new.import_message_batch(notify_message_template.name, program.name, 'some_recipients.csv') }.to raise_error(SystemCallError) }
     end
