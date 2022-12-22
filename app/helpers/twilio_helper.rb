@@ -4,14 +4,14 @@ module TwilioHelper
   end
 
   def twilio_messaging_service_sid
-    Rails.configuration.twilio.messaging_service_sid
+    ENV['TWILIO_MESSAGING_SERVICE_SID']
   end
 
   def twilio_auth_token
-    Rails.application.credentials.twilio.auth_token
+    ENV['TWILIO_AUTH_TOKEN']
   end
 
   def twilio_account_sid
-    Rails.configuration.twilio.account_sid
+    ENV['TWILIO_ACCOUNT_SID']
   end
 end
