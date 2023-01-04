@@ -120,6 +120,26 @@ describe SmsController do
       }
     end
 
+    context "When the message is a keyword with leading or trailing whitespace" do
+      let(:message_body) { ' stoptest ' }
+      specify {
+        expect_any_instance_of(MessageService)
+          .to receive(:send_message).with(
+            anything,
+            Mobility.with_locale(:en) { snap.opt_out_response }
+          )
+        expect {
+          post :incoming_message, params: params
+        }.to change { ConsentChange.count }.from(0).to(1)
+        expect(ConsentChange.last)
+          .to have_attributes(
+                new_consent: false,
+                sms_message: anything,
+                program: snap
+              )
+      }
+    end
+
     context "When the message contains a keyword and additional text" do
       let(:message_body) { 'stoptest please' }
       specify {

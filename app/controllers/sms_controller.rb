@@ -29,7 +29,7 @@ class SmsController < ApiController
       message_sid: params["MessageSid"],
       from: params["From"],
       to: params["To"],
-      body: params["Body"],
+      body: params["Body"].strip,
       direction: :inbound,
       status: params["SmsStatus"].downcase
     )
