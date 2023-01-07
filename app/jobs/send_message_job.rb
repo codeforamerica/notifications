@@ -26,6 +26,16 @@ class SendMessageJob < ApplicationJob
   def build_message_body(recipient)
     body = recipient.message_batch.get_localized_message_body(recipient.preferred_language)
     params = recipient.params || {}
+    change_name_to_title_case(params)
     I18n.backend.send(:interpolate, :en, body, params.symbolize_keys)
+  end
+
+  def change_name_to_title_case(params)
+    if params.key?("preferred_name")
+      name = params["preferred_name"]
+      if name.upcase == name or name.downcase == name
+        params["preferred_name"] = name.capitalize
+      end
+    end
   end
 end
