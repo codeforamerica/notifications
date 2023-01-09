@@ -61,6 +61,35 @@ RSpec.describe SendMessageJob, type: :job do
         end
       end
 
+      context "when the template has `first_name`" do
+        let(:english_body) { 'hello, %{first_name}'}
+
+        context "when the recipient's name is all upper case" do
+          it "sends a message with the name in title case" do
+            recipient.update(params: {first_name: 'MARTHA'})
+            allow(MessageService).to receive(:new) { message_service }
+            expect(message_service).to receive(:send_message).with(recipient, 'hello, Martha')
+            described_class.perform_now recipient.id
+          end
+        end
+        context "when the recipient's name is all lower case" do
+          it "sends a message with the name in title case" do
+            recipient.update(params: {first_name: 'martha'})
+            allow(MessageService).to receive(:new) { message_service }
+            expect(message_service).to receive(:send_message).with(recipient, 'hello, Martha')
+            described_class.perform_now recipient.id
+          end
+        end
+        context "when the recipient's name is mixed case" do
+          it "sends a message with the name unchanged" do
+            recipient.update(params: {first_name: 'MarthA'})
+            allow(MessageService).to receive(:new) { message_service }
+            expect(message_service).to receive(:send_message).with(recipient, 'hello, MarthA')
+            described_class.perform_now recipient.id
+          end
+        end
+      end
+
       context "when the recipient status is other than imported" do
         let (:sms_status) { :api_success }
         it "does not send a message" do
