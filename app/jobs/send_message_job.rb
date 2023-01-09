@@ -31,10 +31,10 @@ class SendMessageJob < ApplicationJob
   end
 
   def change_name_to_title_case(params)
-    if params.key?("preferred_name")
-      name = params["preferred_name"]
+    if params.key?("first_name")
+      name = params["first_name"]
       if name.upcase == name or name.downcase == name
-        params["preferred_name"] = name.capitalize
+        params["first_name"] = name.capitalize
       end
     end
   end
