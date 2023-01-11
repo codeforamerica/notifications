@@ -27,6 +27,7 @@ class SendMessageJob < ApplicationJob
     body = recipient.message_batch.get_localized_message_body(recipient.preferred_language)
     params = recipient.params || {}
     change_name_to_title_case(params)
+    use_last_4_chars_of_client_id(params)
     I18n.backend.send(:interpolate, :en, body, params.symbolize_keys)
   end
 
@@ -36,6 +37,12 @@ class SendMessageJob < ApplicationJob
       if name.upcase == name or name.downcase == name
         params["first_name"] = name.capitalize
       end
+    end
+  end
+
+  def use_last_4_chars_of_client_id(params)
+    if params.key?("client_id") && params["client_id"].length > 4
+      params["client_id"] = params["client_id"][-4..-1]
     end
   end
 end
