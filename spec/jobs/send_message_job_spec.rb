@@ -90,6 +90,27 @@ RSpec.describe SendMessageJob, type: :job do
         end
       end
 
+      context "when the template has `client_id`" do
+        let(:english_body) { 'hello, %{client_id}'}
+
+        context "when the recipient's client_id has more than 4 characters" do
+          it "sends a message with only the last 4 characters from the client_id" do
+            recipient.update(params: {client_id: '1234567890'})
+            allow(MessageService).to receive(:new) { message_service }
+            expect(message_service).to receive(:send_message).with(recipient, 'hello, 7890')
+            described_class.perform_now recipient.id
+          end
+        end
+        context "when the recipient's client_id has 4 or fewer characters" do
+          it "sends a message with all the characters from the client_id" do
+            recipient.update(params: {client_id: 'ABC'})
+            allow(MessageService).to receive(:new) { message_service }
+            expect(message_service).to receive(:send_message).with(recipient, 'hello, ABC')
+            described_class.perform_now recipient.id
+          end
+        end
+      end
+
       context "when the recipient status is other than imported" do
         let (:sms_status) { :api_success }
         it "does not send a message" do
