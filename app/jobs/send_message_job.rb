@@ -23,12 +23,18 @@ class SendMessageJob < ApplicationJob
     MessageService.new.send_message(recipient, message_body)
   end
 
-  def build_message_body(recipient)
-    body = recipient.message_batch.get_localized_message_body(recipient.preferred_language)
+  private
+
+  def params(recipient)
     params = recipient.params || {}
     change_name_to_title_case(params)
     use_last_4_chars_of_client_id(params)
-    I18n.backend.send(:interpolate, :en, body, params.symbolize_keys)
+    params.symbolize_keys
+  end
+
+  def build_message_body(recipient)
+    body = recipient.message_batch.get_localized_message_body(recipient.preferred_language)
+    I18n.backend.send(:interpolate, :en, body, params(recipient))
   end
 
   def change_name_to_title_case(params)
